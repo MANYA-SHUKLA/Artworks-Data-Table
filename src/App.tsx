@@ -38,10 +38,11 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedRows, setSelectedRows] = useState<Artwork[]>([]);
   const [selectCount, setSelectCount] = useState<string>('');
-  
+
   const [globalSelectedIds, setGlobalSelectedIds] = useState<Set<number>>(new Set());
   
   const overlayPanelRef = useRef<OverlayPanel>(null);
+  const checkboxRef = useRef<Checkbox>(null);
 
   const fetchData = async (page: number = 1) => {
     setLoading(true);
@@ -70,6 +71,16 @@ const App: React.FC = () => {
     fetchData(currentPage);
   }, [currentPage]);
 
+  useEffect(() => {
+    const allSelected = artworks.length > 0 && selectedRows.length === artworks.length;
+    const partialSelected = selectedRows.length > 0 && selectedRows.length < artworks.length;
+
+    // Set 'indeterminate' state manually using ref
+    if (checkboxRef.current) {
+      checkboxRef.current.state.indeterminate = partialSelected;
+    }
+  }, [selectedRows, artworks]);
+
   const onPageChange = (event: any) => {
     const newPage = event.page + 1; 
     setCurrentPage(newPage);
@@ -94,7 +105,6 @@ const App: React.FC = () => {
 
   const handleSelectAll = () => {
     if (selectedRows.length === artworks.length) {
-      
       const newGlobalIds = new Set(globalSelectedIds);
       artworks.forEach(artwork => {
         newGlobalIds.delete(artwork.id);
@@ -102,7 +112,6 @@ const App: React.FC = () => {
       setGlobalSelectedIds(newGlobalIds);
       setSelectedRows([]);
     } else {
-      
       const newGlobalIds = new Set(globalSelectedIds);
       artworks.forEach(artwork => {
         newGlobalIds.add(artwork.id);
@@ -115,8 +124,7 @@ const App: React.FC = () => {
   const handleCustomSelection = () => {
     const count = parseInt(selectCount);
     if (isNaN(count) || count <= 0) return;
-    
-    
+
     setGlobalSelectedIds(new Set());
     setSelectedRows([]);
     
@@ -144,6 +152,7 @@ const App: React.FC = () => {
     return (
       <div className="flex align-items-center gap-2">
         <Checkbox
+          ref={checkboxRef}
           checked={allSelected}
           indeterminate={partialSelected}
           onChange={handleSelectAll}
