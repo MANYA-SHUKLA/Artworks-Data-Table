@@ -4,7 +4,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputNumber } from 'primereact/inputnumber';
-import { Checkbox } from 'primereact/checkbox';
+import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
@@ -98,8 +98,8 @@ const App: React.FC = () => {
     setGlobalSelectedIds(newGlobalIds);
   };
 
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = e.target.checked;
+  const handleSelectAll = (e: CheckboxChangeEvent) => {
+    const isChecked = e.checked;
     
     const newGlobalIds = new Set(globalSelectedIds);
     
@@ -128,12 +128,10 @@ const App: React.FC = () => {
     
     const newGlobalIds = new Set(globalSelectedIds);
     
-    // First remove all artworks from current page
     artworks.forEach(artwork => {
       newGlobalIds.delete(artwork.id);
     });
     
-    // Then add the newly selected ones
     newSelection.forEach(artwork => {
       newGlobalIds.add(artwork.id);
     });
